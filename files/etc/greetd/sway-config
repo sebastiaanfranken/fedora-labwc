@@ -1,0 +1,9 @@
+exec "gtkgreet -l -s /etc/greetd/gtkgreet.css; swaymsg exit"
+
+bindsym Mod4+Shift+e exec swaynag \
+	-t warning \
+	-m "Wat wil je doen?" \
+	-b "De computer afsluiten." "systemctl -i poweroff" \
+	-b "De computer herstarten." "systemctl -i reboot"
+
+include /etc/sway/config.d/*
