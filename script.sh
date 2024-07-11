@@ -12,6 +12,7 @@ CALLING_USER_ID=$(env | grep ^SUDO_UID | cut -d '=' -f2)
 CALLING_GROUP_ID=$(env | grep ^SUDO_GID | cut -d '=' -f2)
 
 # The calling users' home dir through sudo
+# shellcheck disable=SC2086
 CALLING_USER_HOME=$(getent passwd ${CALLING_USER_ID} | awk -F ':' '{print $6}')
 
 # Set the script language
@@ -29,6 +30,8 @@ log() {
 
 # Check if this script is being run by either root or someone
 # with sudo privileges.
+#
+# shellcheck disable=SC2086
 if [[ $(id -u) -gt 0 ]]; then
 	echo "Nope. Run this with sudo:"
 	echo "sudo bash $(basename ${0})"
@@ -137,6 +140,8 @@ curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/way
 
 # Set the correct owner and group to the just created files and folders.
 log "Setting correct owner and group to files and folders just created in '~/.config/'."
+
+# shellcheck disable=SC2086
 chown -R ${CALLING_USER_ID}:${CALLING_GROUP_ID} "${CALLING_USER_HOME}/.config/"
 restorecon -RF "${CALLING_USER_HOME}/.config(/.*)"
 
@@ -147,6 +152,8 @@ curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/local/shar
 
 # Set the correct owner and group to the just created files and folders.
 log "Setting correct owner and group to files and folders just created in '~/.local/share/themes/'."
+
+# shellcheck disable=SC2086
 chown -R ${CALLING_USER_ID}:${CALLING_GROUP_ID} "${CALLING_USER_HOME}/.local/share/themes/"
 restorecon -RF "${CALLING_USER_HOME}/.local/share/themes(/.*)"
 
