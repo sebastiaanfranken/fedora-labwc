@@ -1,0 +1,50 @@
+{
+	"position": "bottom",
+	"height": 32,
+	"spacing": 4,
+	"modules-left": [
+		"image#firefox",
+		"image#foot",
+		"image#pcmanfm",
+		"wlr/taskbar"
+	],
+	"modules-center": [],
+	"modules-right": [
+		"network",
+		"cpu",
+		"memory",
+		"clock",
+		"tray"
+	],
+	"image#firefox": {
+		"path": "/usr/share/icons/hicolor/16x16/apps/firefox.png",
+		"size": 16,
+		"on-click": "firefox"
+	},
+	"image#foot": {
+		"path": "/usr/share/icons/hicolor/scalable/apps/foot.svg",
+		"size": 16,
+		"on-click": "foot"
+	},
+	"image#pcmanfm": {
+		"path": "/usr/share/icons/Adwaita/16x16/places/folder.png",
+		"size": 16,
+		"on-click": "pcmanfm"
+	},
+	"wlr/taskbar": {
+		"format": "{title}",
+		"on-click": "minimize-raise"
+	},
+	"network": {
+		"format-ethernet": "{ipaddr}/{cidr} ({ifname})"
+	},
+	"cpu": {
+		"format": "CPU {usage}%"
+	},
+	"memory": {
+		"format": "RAM {percentage}%"
+	},
+	"clock": {
+		"format": "{:%d-%m-%Y %H:%I}"
+	}
+}

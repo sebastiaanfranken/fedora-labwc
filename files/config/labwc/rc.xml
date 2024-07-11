@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<labwc_config>
+	<core>
+		<gap>8</gap>
+	</core>
+	<desktops number="4" />
+	<theme>
+		<name>fedora-labwc</name>
+		<font name="sans" size="10" />
+	</theme>
+	<resize>
+		<drawContents>no</drawContents>
+	</resize>
+	<windowSwitcher show="yes" preview="no" outline="yes" allWorkspaces="no" />
+	<keyboard>
+		<default />
+		<keybind key="W-Return">
+			<action name="Execute" command="foot" />
+		</keybind>
+		<keybind key="A-F3">
+			<action name="Execute" command="bemenu-run" />
+		</keybind>
+		<keybind key="W-d">
+			<action name="Execute" command="bemenu-run" />
+		</keybind>
+		<keybind key="W-F4">
+			<action name="None" />
+		</keybind>
+		<keybind key="W-L">
+			<action name="Execute" command="swaylock" />
+		</keybind>
+		<keybind key="W-Left">
+			<action name="SnapToEdge" direction="left" />
+		</keybind>
+		<keybind key="W-Right">
+			<action name="SnapToEdge" direction="right" />
+		</keybind>
+		<keybind key="W-Up">
+			<action name="ToggleMaximize" />
+		</keybind>
+		<keybind key="W-Down">
+			<action name="ToggleMaximize" />
+		</keybind>
+		<keybind key="C-A-Left">
+			<action name="GoToDesktop" to="left" />
+		</keybind>
+		<keybind key="C-A-Right">
+			<action name="GoToDesktop" to="right" />
+		</keybind>
+		<keybind key="C-A-S-Left">
+			<action name="SendToDesktop" to="left" />
+		</keybind>
+		<keybind key="C-A-S-Right">
+			<action name="SendToDesktop" to="right" />
+		</keybind>
+	</keyboard>
+	<mouse>
+		<default />
+		<context name="Root">
+			<mousebind button="Right" action="press">
+				<action name="ShowMenu" menu="root-menu" />
+			</mousebind>
+		</context>
+	</mouse>
+</labwc_config>

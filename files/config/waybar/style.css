@@ -1,0 +1,39 @@
+* {
+	font-family: "Noto Sans Mono", "Font Awesome 6 Free", "Font Awesome 6 Brands", monospace;
+	font-size: 13px;
+	border: 0;
+	border-radius: 0;
+}
+
+window#waybar {
+	background-color: rgba(0, 0, 0, 0.5);
+	color: rgb(255, 255, 255);
+}
+
+#taskbar button {
+	color: rgb(200, 200, 200);
+}
+
+#taskbar button:hover {
+	background-color: rgb(33, 51, 59);
+}
+
+#taskbar button.active {
+	background-color: rgba(33, 51, 59, 0.75);
+}
+
+#image {
+	padding: 8px;
+}
+
+#image:hover {
+	background-color: rgb(33, 51, 59);
+}
+
+#network,
+#cpu,
+#memory,
+#clock,
+#tray {
+	padding: 0 8px;
+}

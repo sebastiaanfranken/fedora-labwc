@@ -1,0 +1,3 @@
+swaybg -c '#21333b' >/dev/null 2>&1 &
+kanshi >/dev/null 2>&1 &
+waybar >/dev/null 2>&1 &

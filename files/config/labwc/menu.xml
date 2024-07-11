@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_menu>
+	<menu id="client-menu">
+		<item label="Minimaliseren">
+			<action name="Iconify" />
+		</item>
+		<item label="Maximaliseren">
+			<action name="ToggleMaximize" />
+		</item>
+		<item label="Volledig scherm">
+			<action name="ToggleFullscreen" />
+		</item>
+		<item label="Venster oprollen">
+			<action name="ToggleShade" />
+		</item>
+		<item label="Vensterdecoratie aan/uit">
+			<action name="ToggleDecorations" />
+		</item>
+		<item label="Venster altijd bovenop">
+			<action name="ToggleAlwaysOnTop" />
+		</item>
+		<menu id="workspaces" label="Werkblad">
+			<item label="Verplaats naar werkblad links">
+				<action name="SendToDesktop" to="left" />
+			</item>
+			<item label="Verplaats naar werkblad rechts">
+				<action name="SendToDesktop" to="right" />
+			</item>
+			<separator />
+			<item label="Zichtbaar op elk werkblad">
+				<action name="ToggleOmnipresent" />
+			</item>
+		</menu> <!-- /#workspaces -->
+		<separator />
+		<item label="Sluiten">
+			<action name="Close" />
+		</item>
+	</menu> <!-- /#client-menu -->
+
+	<menu id="root-menu">
+		<item label="Firefox">
+			<action name="Execute" command="firefox" />
+		</item>
+		<item label="Terminal">
+			<action name="Execute" command="foot" />
+		</item>
+		<item label="Bestandsbeheer">
+			<action name="Execute" command="pcmanfm" />
+		</item>
+		<separator />
+		<item label="Herconfigureren">
+			<action name="Reconfigure" />
+		</item>
+		<separator />
+		<menu id="internet-menu" label="Internet">
+			<item label="Firefox">
+				<action name="Execute" command="firefox" />
+			</item>
+		</menu> <!-- /#internet-menu -->
+		<menu id="office-menu" label="Kantoor">
+			<item label="LibreOffice">
+				<action name="Execute" command="libreoffice" />
+			</item>
+			<separator />
+			<item label="LibreOffice Writer">
+				<action name="Execute" command="oowriter" />
+			</item>
+			<item label="LibreOffice Calc">
+				<action name="Execute" command="oocalc" />
+			</item>
+			<item label="LibreOffice Impress">
+				<action name="Execute" command="ooimpress" />
+			</item>
+			<item label="PDF lezer">
+				<action name="Execute" command="xreader" />
+			</item>
+		</menu> <!-- /#office-menu -->
+		<menu id="tools-menu" label="Gereedschappen">
+			<item label="Teksteditor">
+				<action name="Execute" command="xed" />
+			</item>
+			<item label="Terminal">
+				<action name="Execute" command="foot" />
+			</item>
+		</menu> <!-- /#tools-menu -->
+		<separator />
+		<menu id="session-menu" label="Sessie">
+			<item label="Uitloggen">
+				<action name="Exit" />
+			</item>
+			<separator />
+			<menu id="power-menu" label="Afsluiten">
+				<item label="Computer afsluiten">
+					<action name="Execute" command="systemctl -i poweroff" />
+				</item>
+				<item label="Computer herstarten">
+					<action name="Execute" command="systemctl -i reboot" />
+				</item>
+				<item label="Computer snel herstarten">
+					<action name="Execute" command="systemctl -i soft-reboot" />
+				</item>
+			</menu> <!-- /#power-menu -->
+		</menu> <!-- /#session-menu -->
+	</menu> <!-- /#root-menu -->
+</openbox_menu>
