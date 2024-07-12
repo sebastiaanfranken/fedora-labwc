@@ -1,6 +1,19 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 # This script transforms a Fedora Minimal install into Fedora Minimal + LabWC.
+
+# Set the script language *first*
+LANG=C
+
+# Check if this script is being run by either root or someone
+# with sudo privileges.
+#
+# shellcheck disable=SC2086
+if [[ $(id -u) -gt 0 ]]; then
+	echo "Nope. Run this with sudo:"
+	echo "sudo bash $(basename ${0})"
+	exit 1
+fi
 
 # This is the name that is used to identify the script in the system journal.
 SCRIPTNAME=fedora-labwc
@@ -15,11 +28,15 @@ CALLING_GROUP_ID=$(env | grep ^SUDO_GID | cut -d '=' -f2)
 # shellcheck disable=SC2086
 CALLING_USER_HOME=$(getent passwd ${CALLING_USER_ID} | awk -F ':' '{print $6}')
 
-# Set the script language
-LANG=C
-
 # Set option(s) passed to DNF
-DNFOPTIONS="-y"
+DNFOPTIONS=-y
+
+# These configuration files are applied system wide.
+SYSTEMFILES=("/etc/greetd/config.toml" "/etc/greetd/environments" "/etc/greetd/gtkgreet.css" "/etc/greetd/sway-config")
+
+# The configuration files are applied user wide.
+# shellcheck disable=SC2088
+USERFILES=("~/.config/foot/foot.ini" "~/.config/kanshi/config" "~/.config/labwc/autostart" "~/.config/labwc/menu.xml" "~/.config/labwc/rc.xml" "~/.config/fastfetch/config.jsonc" "~/.config/swaylock/config" "~/.config/waybar/config.jsonc" "~/.config/waybar/style.css")
 
 # This function makes it easier to log to the system journal
 # while outputting the same message to the screen.
@@ -27,16 +44,6 @@ log() {
 	systemd-cat -t ${SCRIPTNAME} echo "${1}"
 	echo "${1}"
 }
-
-# Check if this script is being run by either root or someone
-# with sudo privileges.
-#
-# shellcheck disable=SC2086
-if [[ $(id -u) -gt 0 ]]; then
-	echo "Nope. Run this with sudo:"
-	echo "sudo bash $(basename ${0})"
-	exit 1
-fi
 
 # Install VIM. Nano sucks.
 log "Installing VIM."
@@ -58,106 +65,71 @@ dnf install firefox libreoffice libreoffice-gtk3 eza xed xreader waybar
 # Set 'graphical.target` as the new default runlevel and enable greetd
 log "Setting 'graphical.target' as the new default runlevel, and enabling greetd.service."
 systemctl set-default graphical.target
-systemctl enable greetd.servvice
+systemctl enable greetd.service
 
-# Make a backup of the existing file '/etc/greetd/config.toml'
-log "Making a backup of '/etc/greetd/config.toml' to '/etc/greetd/config.toml.bak'."
-cp /etc/greetd/config.toml /etc/greetd/config.toml.bak
+# Loop over the SYSTEMFILES array and check if the file mentioned
+# exists, if it does make a dirty backup of it. If it doesn't just
+# carry on.
+for SYSTEMFILE in "${SYSTEMFILES[@]}"; do
+	DIRNAME=$(dirname "${SYSTEMFILE}")
 
-# Get the new version from the repo.
-log "Downloading custom version of '/etc/greetd/config.toml'."
-curl https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/etc/greetd/config.toml -o /etc/greetd/config.toml
+	log "Processing '${SYSTEMFILE}'."
+	
+	# Check if the directory containing the file(s) exists.
+	# If it doesn't create it.
+	if ! [[ -d "${DIRNAME}" ]]; then
+		log "The required directory '${DIRNAME}' does not exist. Creating that."
+		mkdir -p "${DIRNAME}"
+	fi
+	
+	# Check if the file exists. If it does make a dirty backup.
+	if [[ -f "${SYSTEMFILE}" ]]; then
+		log "The file '${SYSTEMFILE}' is found, making a copy."
+		cp "${SYSTEMFILE}" "${SYSTEMFILE}.bak"
+	fi
+	
+	# Download the file from Github and put it in the right spot.
+	curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/${SYSTEMFILE:1}" -o "${SYSTEMFILE}"
+done
 
-# Make a backup of the existing file '/etc/greetd/environments'
-log "Making a backup of '/etc/greetd/environments' to '/etc/greetd/environments.bak'."
-cp /etc/greetd/environments /etc/greetd/environments.bak
+# Loop over the USERFILES array and check if the file mentioned
+# exists, if it does make a dirty backup of it. If it doesn't just
+# carry on.
+for USERFILE in "${USERFILES[@]}"; do
+	EXPANDED="${CALLING_USER_HOME}/${USERFILE:2}"
+	DIRNAME=$(dirname "${EXPANDED}")
+	
+	log "Processing '${EXPANDED}'."
+	
+	# Check if the directory containing the file(s) exists.
+	# If it doesn't create it.
+	if ! [[ -d "${DIRNAME}" ]]; then
+		log "The required directory '${DIRNAME}' does not exist. Creating that."
+		mkdir -p "${DIRNAME}"
+	fi
+	
+	# Check if the file exists. If it does make a dirty copy.
+	if [[ -f "${EXPANDED}" ]]; then
+		log "The file '${EXPANDED}' is found, making a copy."
+		cp "${EXPANDED}" "${EXPANDED}.bak"
+	fi
+	
+	# Download the file from Github and put it in the right spot.
+	##curl "https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/${USERFILE:3}" -o "${EXPANDED}"
+	curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/${USERFILE:3}" -o "${EXPANDED}"
+done
 
-# Get the new version from the repo
-log "Downloading custom version of '/etc/greetd/environments'."
-curl https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/etc/greetd/environments -o /etc/greetd/environments
+# Set the correct user and group ID to the files and folders that were just downloaded
+# and created in the users' home dir.
+log "Setting the correct user and group ID on the files/folders just downloaded/created."
+chown -R "${CALLING_USER_ID}:${CALLING_GROUP_ID}" "${CALLING_USER_HOME}/.config/"
 
-# Get the custom file '/etc/greetd/gtkgreet.css' from the repo
-log "Downloading custom file '/etc/greetd/gtkgreet.css'."
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/etc/greetd/gtkgreet.css -o /etc/greetd/gtkgreet.css
+# SELinux magic
+log "Setting the correct SELinux label(s)"
+restorecon -RF "${CALLING_USER_HOME}/.config/"
 
-# Get the custom file '/etc/greetd/sway-config' from the repo
-log "Downloading custom file '/etc/greetd/sway-config'."
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/etc/greetd/sway-config -o /etc/greetd/sway-config
-
-# Get the custom file '~/.config/foot/foot.ini' from the repo. Create the folder
-# for it first, though
-log "Creating the '~/.config/foot' folder and downloading the '~/.config/foot/foot.ini' file."
-mkdir -p "${CALLING_USER_HOME}/.config/foot/"
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/foot/foot.ini -o "${CALLING_USER_HOME}/.config/foot/foot.ini"
-
-# Get the custom file '~/.config/kanshi/config' from the repo. Create the folder
-# for it first, though.
-log "Creating the '~/.config/kanshi/' folder and downloading the '~/.config/kanshi/config' file."
-mkdir -p "${CALLING_USER_HOME}/.config/kanshi/"
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/kanshi/config -o "${CALLING_USER_HOME}/.config/kanshi/config"
-
-# Create the '~/.config/labwc/` folder first since there are a few files that
-# need to get downloaded to it.
-log "Creating the '~/.config/labwc/' folder."
-mkdir -p "${CALLING_USER_HOME}/.config/labwc/"
-
-# Get the custom file '~/.config/labwc/autostart' from the repo.
-log "Downloading the '~/.config/labwc/autostart' file."
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/labwc/autostart -o "${CALLING_USER_HOME}/.config/labwc/autostart"
-
-# Get the custom file '~/.config/labwc/menu.xml' from the repo.
-log "Downloading the '~/.config/labwc/menu.xml' file."
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/labwc/autostart -o "${CALLING_USER_HOME}/.config/labwc/menu.xml"
-
-# Get the custom file '~/.config/labwc/rc.xml' from the repo.
-log "Downloading the '~/.config/labwc/rc.xml' file."
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/labwc/autostart -o "${CALLING_USER_HOME}/.config/labwc/rc.xml"
-
-# Get the custom file '~/.config/fastfetch/config.jsonc` from the repo. Create the folder
-# for it first, though.
-log "Creating the '~/.config/fastfetch' folder and downloading the '~/.config/fastfetch/config.jsonc' file."
-mkdir -p "${CALLING_USER_HOME}/.config/fastfetch/"
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/fastfetch/config.jsonc -o "${CALLING_USER_HOME}/.config/fastfetch/config.jsonc"
-
-# Get the custom file '~/.config/swaylock/config` from the repo. Create the fodler
-# for it first, though.
-log "Creating the '~/.config/swaylock' folder and downloading the '~/.config/swaylock/config' file."
-mkdir -p "${CALLING_USER_HOME}/.config/swaylock/"
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/swaylock/config -o "${CALLING_USER_HOME}/.config/swaylock/config"
-
-# Create the '~/.config/waybar/' folder first since there are a few files that
-# need to get downloaded to it.
-log "Creating the '~/.config/waybar/' folder."
-mkdir -p "${CALLING_USER_HOME}/.config/waybar/"
-
-# Get the custom file '~/.config/waybar/config.jsonc' from the repo.
-log "Downloading the '~/.config/waybar/config.jsonc' file."
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/waybar/config.jsonc -o "${CALLING_USER_HOME}/.config/waybar/config.jsonc"
-
-# Get the custom file '~/.config/waybar/style.css' from the repo.
-log "Downloading the '~/.config/waybar/style.css' file."
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/config/waybar/style.css -o "${CALLING_USER_HOME}/.config/waybar/style.css"
-
-# Set the correct owner and group to the just created files and folders.
-log "Setting correct owner and group to files and folders just created in '~/.config/'."
-
-# shellcheck disable=SC2086
-chown -R ${CALLING_USER_ID}:${CALLING_GROUP_ID} "${CALLING_USER_HOME}/.config/"
-restorecon -RF "${CALLING_USER_HOME}/.config(/.*)"
-
-# Get the custom theme file '~/.local/share/themes/fedora-labwc/openbox-3/themerc' from the repo.
-log "Creating the '~/.local/share/themes/fedora-labwc/openbox-3/' folder and downloading the '~/.local/share/themes/fedora-labwc/openbox-3/themerc' file."
-mkdir -p "${CALLING_USER_HOME}/.local/share/themes/fedora-labwc/openbox-3/"
-curl https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/local/share/themes/fedora-labwc/openbox-3/themerc -o "${CALLING_USER_HOME}/.local/share/themes/fedora-labwc/openbox-3/themerc"
-
-# Set the correct owner and group to the just created files and folders.
-log "Setting correct owner and group to files and folders just created in '~/.local/share/themes/'."
-
-# shellcheck disable=SC2086
-chown -R ${CALLING_USER_ID}:${CALLING_GROUP_ID} "${CALLING_USER_HOME}/.local/share/themes/"
-restorecon -RF "${CALLING_USER_HOME}/.local/share/themes(/.*)"
-
-# Everything has been installed and configured. Reboot to apply the changes.
-log "Everything has been installed and configured. Reboot to apply the changes."
+# Done! If everything went according to plan you should now have a labwc install that's customized.
+# To see it, reboot the machine now.
+log "Done! Reboot the machine now to apply all changes made and to test if everything went as planned."
 
 exit 0
