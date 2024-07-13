@@ -115,7 +115,6 @@ for USERFILE in "${USERFILES[@]}"; do
 	fi
 	
 	# Download the file from Github and put it in the right spot.
-	##curl "https://github.com/sebastiaanfranken/fedora-labwc/raw/main/files/${USERFILE:3}" -o "${EXPANDED}"
 	curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/${USERFILE:3}" -o "${EXPANDED}"
 done
 
@@ -127,6 +126,18 @@ chown -R "${CALLING_USER_ID}:${CALLING_GROUP_ID}" "${CALLING_USER_HOME}/.config/
 # SELinux magic
 log "Setting the correct SELinux label(s)"
 restorecon -RF "${CALLING_USER_HOME}/.config/"
+
+# Process the custom theme and see if the required stuff exists. If it does not, create the
+# required folder(s) and download the required file(s) from Github.
+if ! [[ -d "${CALLING_USER_HOME}/.local/share/themes/fedora-labwc/openbox-3" ]]; then
+	log "The custom theme folder does not exist. Creating it now."
+	mkdir -p "${CALLING_USER_HOME}/.local/share/themes/fedora-labwc/openbox-3/"
+fi
+
+# Download the themerc for the custom fedora labwc theme even if it exists, overwriting it
+log "Downloading the fedora-custom-labwc themerc file."
+curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/local/share/themes/fedora-labwc/openbox-3/themerc" -o "${CALLING_USER_HOME}/.local/share/themes/fedora-labwc/openbox-3/themerc"
+chown -R "${CALLING_USER_HOME}/.local/share/themes/"
 
 # Done! If everything went according to plan you should now have a labwc install that's customized.
 # To see it, reboot the machine now.
