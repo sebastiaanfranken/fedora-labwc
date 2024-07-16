@@ -11,7 +11,7 @@ A quick overview of some of the (custom) keyboard shortcuts. For a complete list
 | *Super* + *Return* | Opens the terminal application (Foot) |
 | *Alt* + *F3* | Opens the menu launcher (bemenu-run) |
 | *Super* + *d* | Opens the menu laucher (bemenu-run) |
-| *Super* + *l* | Locks the screen (swaylock) |
+| *Super* + *l* (lower case L) | Locks the screen (swaylock) |
 | *Super* + *left arrow* | Snaps the active window to the left of the screen |
 | *Super* + *right arrow* | Snaps the active window to the right of the screen |
 | *Super* + *up arrow* | Maximizes the active window |
