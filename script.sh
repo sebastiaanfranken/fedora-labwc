@@ -36,7 +36,7 @@ SYSTEMFILES=("/etc/greetd/config.toml" "/etc/greetd/environments" "/etc/greetd/g
 
 # The configuration files are applied user wide.
 # shellcheck disable=SC2088
-USERFILES=("~/.config/foot/foot.ini" "~/.config/kanshi/config" "~/.config/labwc/autostart" "~/.config/labwc/menu.xml" "~/.config/labwc/rc.xml" "~/.config/fastfetch/config.jsonc" "~/.config/swaylock/config" "~/.config/waybar/config.jsonc" "~/.config/waybar/style.css")
+USERFILES=("~/.config/foot/foot.ini" "~/.config/kanshi/config" "~/.config/labwc/autostart" "~/.config/labwc/menu.xml" "~/.config/labwc/rc.xml" "~/.config/fastfetch/config.jsonc" "~/.config/swaylock/config" "~/.config/waybar/config.jsonc" "~/.config/waybar/style.css" "~/.config/htop/htoprc")
 
 # This function makes it easier to log to the system journal
 # while outputting the same message to the screen.
@@ -57,7 +57,7 @@ dnf swap nano-default-editor vim-default-editor ${DNFOPTIONS}
 # This gets split into two batches because the first one has
 # --setopt=install_weak_deps=False added to teh DNF options.
 log "Installing base packages batch 1 of 2."
-dnf install labwc greetd greetd-selinux gtkgreet xdg-utils xdg-user-dirs wayland-logout sway foot kanshi pcmanfm fastfetch wl-clipboard ${DNFOPTIONS} --setopt=install_weak_deps=False
+dnf install labwc greetd greetd-selinux gtkgreet xdg-utils xdg-user-dirs wayland-logout sway foot kanshi pcmanfm fastfetch wl-clipboard htop ${DNFOPTIONS} --setopt=install_weak_deps=False
 
 log "Installing base pacakges batch 2 of 2."
 dnf install firefox libreoffice libreoffice-gtk3 eza xed xreader waybar
