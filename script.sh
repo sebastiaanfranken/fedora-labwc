@@ -60,7 +60,7 @@ log "Installing base packages batch 1 of 2."
 dnf install labwc greetd greetd-selinux gtkgreet xdg-utils xdg-user-dirs wayland-logout sway foot kanshi pcmanfm fastfetch wl-clipboard htop ${DNFOPTIONS} --setopt=install_weak_deps=False
 
 log "Installing base pacakges batch 2 of 2."
-dnf install firefox libreoffice libreoffice-gtk3 eza xed xreader waybar ${DNFOPTIONS}
+dnf install firefox libreoffice libreoffice-gtk3 eza xed xreader waybar swaylock ${DNFOPTIONS}
 
 # Set 'graphical.target` as the new default runlevel and enable greetd
 log "Setting 'graphical.target' as the new default runlevel, and enabling greetd.service."
