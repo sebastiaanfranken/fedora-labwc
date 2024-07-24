@@ -60,7 +60,7 @@ log "Installing base packages batch 1 of 2."
 dnf install labwc greetd greetd-selinux gtkgreet xdg-utils xdg-user-dirs wayland-logout sway foot kanshi pcmanfm fastfetch wl-clipboard htop ${DNFOPTIONS} --setopt=install_weak_deps=False
 
 log "Installing base pacakges batch 2 of 2."
-dnf install firefox libreoffice libreoffice-gtk3 eza xed xreader waybar
+dnf install firefox libreoffice libreoffice-gtk3 eza xed xreader waybar ${DNFOPTIONS}
 
 # Set 'graphical.target` as the new default runlevel and enable greetd
 log "Setting 'graphical.target' as the new default runlevel, and enabling greetd.service."
@@ -137,7 +137,7 @@ fi
 # Download the themerc for the custom fedora labwc theme even if it exists, overwriting it
 log "Downloading the fedora-custom-labwc themerc file."
 curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/local/share/themes/fedora-labwc/openbox-3/themerc" -o "${CALLING_USER_HOME}/.local/share/themes/fedora-labwc/openbox-3/themerc"
-chown -R "${CALLING_USER_HOME}/.local/share/themes/"
+chown -R "${CALLING_USER_ID}:${CALLING_GROUP_ID}" "${CALLING_USER_HOME}/.local/share/themes/"
 
 # Done! If everything went according to plan you should now have a labwc install that's customized.
 # To see it, reboot the machine now.
