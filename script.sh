@@ -36,7 +36,7 @@ SYSTEMFILES=("/etc/greetd/config.toml" "/etc/greetd/environments" "/etc/greetd/g
 
 # The configuration files are applied user wide.
 # shellcheck disable=SC2088
-USERFILES=("~/.config/foot/foot.ini" "~/.config/kanshi/config" "~/.config/labwc/autostart" "~/.config/labwc/menu.xml" "~/.config/labwc/rc.xml" "~/.config/fastfetch/config.jsonc" "~/.config/swaylock/config" "~/.config/waybar/config.jsonc" "~/.config/waybar/style.css" "~/.config/htop/htoprc")
+USERFILES=("~/.config/foot/foot.ini" "~/.config/kanshi/config" "~/.config/labwc/autostart" "~/.config/labwc/menu.xml" "~/.config/labwc/rc.xml" "~/.config/fastfetch/config.jsonc" "~/.config/swaylock/config" "~/.config/waybar/config.jsonc" "~/.config/waybar/style.css" "~/.config/htop/htoprc" "~/.config/sway/config")
 
 # This function makes it easier to log to the system journal
 # while outputting the same message to the screen.
