@@ -41,10 +41,10 @@ USERFILES=("~/.config/foot/foot.ini" "~/.config/kanshi/config" "~/.config/labwc/
 # Array of file(s) to ignore
 IGNOREFILES=()
 
-if [[ -f "${CALLING_USER_HOME}/.config/fedora-labwc-ignore-files.conf" ]]; then
+if [[ -f "${CALLING_USER_HOME}/.config/${SCRIPTNAME}-ignore-files.conf" ]]; then
 	while read -r LINE; do
 		IGNOREFILES+=("${LINE}")
-	done < "${CALLING_USER_HOME}/.config/fedora-labwc-ignore-files.conf"
+	done < "${CALLING_USER_HOME}/.config/${SCRIPTNAME}-ignore-files.conf"
 fi
 
 # This function makes it easier to log to the system journal
