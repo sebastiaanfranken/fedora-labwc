@@ -20,3 +20,13 @@ A quick overview of some of the (custom) keyboard shortcuts. For a complete list
 | *Control* + *Alt* + *right arrow* | Switch to the desktop right of current one | 
 | *Control* + *Shift* + *Alt* + *left arrow* | Switch to the desktop left of the current one and transport current application |
 | *Control* + *Shift* + *Alt* + *right arrow* | Switch to the desktop right of the current one and transport current application |
+
+## Configuration
+To configure this tool to ignore certain configuration files create a new file at `~/.config/fedora-labwc-ignore-files.conf` and put the
+filename you want to ignore in it, one filename per line. For example, to ignore the user configuration file for the foot terminal add the following to `~/.config/fedora-labwc-ignore-files.conf`:
+
+```
+~/.config/foot/foot.ini
+```
+
+The next time `install.sh` is called it will ignore the `~/.config/foot/foot.ini` file and move on to the next file.

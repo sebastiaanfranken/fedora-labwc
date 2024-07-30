@@ -38,6 +38,15 @@ SYSTEMFILES=("/etc/greetd/config.toml" "/etc/greetd/environments" "/etc/greetd/g
 # shellcheck disable=SC2088
 USERFILES=("~/.config/foot/foot.ini" "~/.config/kanshi/config" "~/.config/labwc/autostart" "~/.config/labwc/menu.xml" "~/.config/labwc/rc.xml" "~/.config/fastfetch/config.jsonc" "~/.config/swaylock/config" "~/.config/waybar/config.jsonc" "~/.config/waybar/style.css" "~/.config/htop/htoprc" "~/.config/sway/config")
 
+# Array of file(s) to ignore
+IGNOREFILES=()
+
+if [[ -f "${CALLING_USER_HOME}/.config/fedora-labwc-ignore-files.conf" ]]; then
+	while read -r LINE; do
+		IGNOREFILES+=("${LINE}")
+	done < "${CALLING_USER_HOME}/.config/fedora-labwc-ignore-files.conf"
+fi
+
 # This function makes it easier to log to the system journal
 # while outputting the same message to the screen.
 log() {
@@ -71,61 +80,65 @@ systemctl enable greetd.service
 # exists, if it does make a dirty backup of it. If it doesn't just
 # carry on.
 for SYSTEMFILE in "${SYSTEMFILES[@]}"; do
-	DIRNAME=$(dirname "${SYSTEMFILE}")
+	if [[ "${IGNOREFILES[*]}" =~ ${SYSTEMFILE} ]]; then
+		log "Ignoring '${SYSTEMFILE}' since it's defined in the config."
+	else
+		DIRNAME=$(dirname "${SYSTEMFILE}")
 
-	log "Processing '${SYSTEMFILE}'."
-	
-	# Check if the directory containing the file(s) exists.
-	# If it doesn't create it.
-	if ! [[ -d "${DIRNAME}" ]]; then
-		log "The required directory '${DIRNAME}' does not exist. Creating that."
-		mkdir -p "${DIRNAME}"
+		log "Processing '${SYSTEMFILE}'."
+
+		# Check if the directory containing the file(s) exists.
+		# If it doesn't create it.
+		if ! [[ -d "${DIRNAME}" ]]; then
+			log "The required directory '${DIRNAME}' does not exist. Creating that."
+			mkdir -p "${DIRNAME}"
+		fi
+
+		# Check if the file exists. If it does make a dirty backup.
+		if [[ -f "${SYSTEMFILE}" ]]; then
+			log "The file '${SYSTEMFILE}' is found, making a copy."
+			cp "${SYSTEMFILE}" "${SYSTEMFILE}.bak"
+		fi
+
+		# Download the file from Github and put it in the right spot.
+		curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/${SYSTEMFILE:1}" -o "${SYSTEMFILE}"
 	fi
-	
-	# Check if the file exists. If it does make a dirty backup.
-	if [[ -f "${SYSTEMFILE}" ]]; then
-		log "The file '${SYSTEMFILE}' is found, making a copy."
-		cp "${SYSTEMFILE}" "${SYSTEMFILE}.bak"
-	fi
-	
-	# Download the file from Github and put it in the right spot.
-	curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/${SYSTEMFILE:1}" -o "${SYSTEMFILE}"
 done
 
 # Loop over the USERFILES array and check if the file mentioned
 # exists, if it does make a dirty backup of it. If it doesn't just
 # carry on.
 for USERFILE in "${USERFILES[@]}"; do
-	EXPANDED="${CALLING_USER_HOME}/${USERFILE:2}"
-	DIRNAME=$(dirname "${EXPANDED}")
-	
-	log "Processing '${EXPANDED}'."
-	
-	# Check if the directory containing the file(s) exists.
-	# If it doesn't create it.
-	if ! [[ -d "${DIRNAME}" ]]; then
-		log "The required directory '${DIRNAME}' does not exist. Creating that."
-		mkdir -p "${DIRNAME}"
+	if [[ "${IGNOREFILES[*]}" =~ ${USERFILE} ]]; then
+		log "Ignoring '${USERFILE}' since it's defined in the config."
+	else
+		EXPANDED="${CALLING_USER_HOME}/${USERFILE:2}"
+		DIRNAME=$(dirname "${EXPANDED}")
+
+		log "Processing '${EXPANDED}'."
+
+		# Check if the directory containing the file(s) exists.
+		# If it doesn't create it.
+		if ! [[ -d "${DIRNAME}" ]]; then
+			log "The required directory '${DIRNAME}' does not exist. Creating that."
+			mkdir -p "${DIRNAME}"
+		fi
+
+		# Check if the file exists. If it does make a dirty copy.
+		if [[ -f "${EXPANDED}" ]]; then
+			log "The file '${EXPANDED}' is found, making a copy."
+			cp "${EXPANDED}" "${EXPANDED}.bak"
+		fi
+
+		# Download the file from Github and put it in the right spot.
+		curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/${USERFILE:3}" -o "${EXPANDED}"
 	fi
-	
-	# Check if the file exists. If it does make a dirty copy.
-	if [[ -f "${EXPANDED}" ]]; then
-		log "The file '${EXPANDED}' is found, making a copy."
-		cp "${EXPANDED}" "${EXPANDED}.bak"
-	fi
-	
-	# Download the file from Github and put it in the right spot.
-	curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/${USERFILE:3}" -o "${EXPANDED}"
 done
 
 # Set the correct user and group ID to the files and folders that were just downloaded
 # and created in the users' home dir.
 log "Setting the correct user and group ID on the files/folders just downloaded/created."
 chown -R "${CALLING_USER_ID}:${CALLING_GROUP_ID}" "${CALLING_USER_HOME}/.config/"
-
-# SELinux magic
-log "Setting the correct SELinux label(s)"
-restorecon -RF "${CALLING_USER_HOME}/.config/"
 
 # Process the custom theme and see if the required stuff exists. If it does not, create the
 # required folder(s) and download the required file(s) from Github.
@@ -138,6 +151,11 @@ fi
 log "Downloading the fedora-custom-labwc themerc file."
 curl "https://raw.githubusercontent.com/sebastiaanfranken/fedora-labwc/main/files/local/share/themes/fedora-labwc/openbox-3/themerc" -o "${CALLING_USER_HOME}/.local/share/themes/fedora-labwc/openbox-3/themerc"
 chown -R "${CALLING_USER_ID}:${CALLING_GROUP_ID}" "${CALLING_USER_HOME}/.local/share/themes/"
+
+# SELinux magic
+log "Setting the correct SELinux label(s)"
+restorecon -RF "${CALLING_USER_HOME}/.config/"
+restorecon -RF "${CALLING_USER_HOME}/.local/share/themes/"
 
 # Done! If everything went according to plan you should now have a labwc install that's customized.
 # To see it, reboot the machine now.
