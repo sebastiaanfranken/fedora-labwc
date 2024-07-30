@@ -93,12 +93,13 @@ log "Setting 'graphical.target' as the new default runlevel, and enabling greetd
 systemctl set-default graphical.target
 systemctl enable greetd.service
 
-# Loop over the SYSTEMFILES array and check if the file mentioned
-# exists, if it does make a dirty backup of it. If it doesn't just
-# carry on.
+# Loop over the SYSTEMFILES array and check if the file mentioned exists.
+# If it does and it is mentioned in the IGNOREFILES array the file is ignored.
+# If it does and it is *not* mentioned in the IGNOREFILES array the file is (dirty)
+# backed up and overwritten.
 for SYSTEMFILE in "${SYSTEMFILES[@]}"; do
 	if [[ "${IGNOREFILES[*]}" =~ ${SYSTEMFILE} ]]; then
-		log "Ignoring '${SYSTEMFILE}' since it's defined in the config."
+		log "Not processing '${SYSTEMFILE}'. It is listed in '${CALLING_USER_HOME}/.config/${SCRIPTNAME}-ignore-files.conf'."
 	else
 		DIRNAME=$(dirname "${SYSTEMFILE}")
 
@@ -122,12 +123,13 @@ for SYSTEMFILE in "${SYSTEMFILES[@]}"; do
 	fi
 done
 
-# Loop over the USERFILES array and check if the file mentioned
-# exists, if it does make a dirty backup of it. If it doesn't just
-# carry on.
+# Loop over the USERFILES array and check if the file mentioned exists.
+# If it does and it is mentioned in the IGNOREFILES array the file is ignored.
+# If it does and it is *not* mentioned in the IGNOREFILES array the file is (dirty)
+# backed up and overwritten.
 for USERFILE in "${USERFILES[@]}"; do
 	if [[ "${IGNOREFILES[*]}" =~ ${USERFILE} ]]; then
-		log "Ignoring '${USERFILE}' since it's defined in the config."
+		log "Not processing '${USERFILE}'. It is listed in '${CALLING_USER_HOME}/.config/${SCRIPTNAME}-ignore-files.conf'."
 	else
 		EXPANDED="${CALLING_USER_HOME}/${USERFILE:2}"
 		DIRNAME=$(dirname "${EXPANDED}")
