@@ -32,11 +32,28 @@ CALLING_USER_HOME=$(getent passwd ${CALLING_USER_ID} | awk -F ':' '{print $6}')
 DNFOPTIONS=-y
 
 # These configuration files are applied system wide.
-SYSTEMFILES=("/etc/greetd/config.toml" "/etc/greetd/environments" "/etc/greetd/gtkgreet.css" "/etc/greetd/sway-config")
+SYSTEMFILES=(
+	"/etc/greetd/config.toml"
+	"/etc/greetd/environments"
+	"/etc/greetd/gtkgreet.css"
+	"/etc/greetd/sway-config"
+)
 
 # The configuration files are applied user wide.
 # shellcheck disable=SC2088
-USERFILES=("~/.config/foot/foot.ini" "~/.config/kanshi/config" "~/.config/labwc/autostart" "~/.config/labwc/menu.xml" "~/.config/labwc/rc.xml" "~/.config/fastfetch/config.jsonc" "~/.config/swaylock/config" "~/.config/waybar/config.jsonc" "~/.config/waybar/style.css" "~/.config/htop/htoprc" "~/.config/sway/config")
+USERFILES=(
+	"~/.config/foot/foot.ini"
+	"~/.config/kanshi/config"
+	"~/.config/labwc/autostart"
+	"~/.config/labwc/menu.xml"
+	"~/.config/labwc/rc.xml"
+	"~/.config/fastfetch/config.jsonc"
+	"~/.config/swaylock/config"
+	"~/.config/waybar/config.jsonc"
+	"~/.config/waybar/style.css"
+	"~/.config/htop/htoprc"
+	"~/.config/sway/config"
+)
 
 # Array of file(s) to ignore
 IGNOREFILES=()
