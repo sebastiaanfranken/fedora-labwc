@@ -18,10 +18,10 @@
 			<action name="Execute" command="foot" />
 		</keybind>
 		<keybind key="A-F3">
-			<action name="Execute" command="bemenu-run" />
+			<action name="Execute" command="wmenu-run" />
 		</keybind>
 		<keybind key="W-d">
-			<action name="Execute" command="bemenu-run" />
+			<action name="Execute" command="wmenu-run" />
 		</keybind>
 		<keybind key="W-F4">
 			<action name="None" />

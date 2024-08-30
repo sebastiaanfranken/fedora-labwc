@@ -8,7 +8,7 @@ set $right right
 set $down down
 set $left left
 set $term foot
-set $menu bemenu-run | xargs swaymsg exec --
+set $menu wmenu-run | xargs swaymsg exec --
 # }}}
 # Output configuration {{{
 output * bg "#21333b" solid_color resolution 1920x1200
